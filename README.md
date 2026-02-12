@@ -1,122 +1,144 @@
-# 📚 Curso de Git
+# Guía Rápida de Git 🚀
 
-Guía completa de comandos y configuración para trabajar con Git de forma eficiente.
-
----
-
-## 📦 Instalación
-
-### Instalar MAN para documentación
+## 🔧 **Configuración Inicial**
 ```bash
-sudo pacman -S man-db man-pages less
+git config --global user.name "Tu Nombre"
+git config --global user.email "tu@email.com"
+git config --global core.editor "code --wait"  # VS Code como editor
+git config --list  # Ver configuración
 ```
 
-### Instalar Git
+## 📁 **Iniciar/Clonar Repositorio**
 ```bash
-sudo pacman -S git
+git init                    # Iniciar repo local
+git clone <url>            # Clonar repo remoto
+git clone <url> <nombre>   # Clonar con nombre personalizado
 ```
 
----
-
-## 🔧 Configuración Inicial
-
-### Ver todos los comandos disponibles
+## 💾 **Cambios Básicos**
 ```bash
-git -h
+git status                 # Ver estado de archivos
+git add <archivo>         # Agregar archivo específico
+git add .                 # Agregar todos los archivos
+git commit -m "mensaje"   # Commit con mensaje
+git commit -am "mensaje"  # Add + commit (solo archivos trackeados)
 ```
 
-### Obtener documentación de un comando
+## 🌿 **Ramas (Branches)**
 ```bash
-git help COMANDO
+git branch                # Listar ramas locales
+git branch -a            # Listar todas las ramas (locales + remotas)
+git branch <nombre>      # Crear nueva rama
+git checkout <rama>      # Cambiar de rama
+git checkout -b <rama>   # Crear y cambiar a nueva rama
+git merge <rama>        # Fusionar rama a la actual
+git branch -d <rama>    # Eliminar rama
 ```
 
-### Configurar usuario y email (GLOBAL)
+## 📤 **Remotos**
 ```bash
-git config --global user.name "NOMBRE"
-git config --global user.email "EMAIL"
-git config --list
+git remote -v            # Ver repositorios remotos
+git remote add origin <url>  # Agregar remoto
+git push -u origin <rama>    # Subir rama y establecer upstream
+git push                 # Subir cambios
+git pull                 # Traer y fusionar cambios
+git fetch                # Traer cambios sin fusionar
 ```
 
----
+## 🔄 **Sincronización**
+```bash
+git push origin <rama>   # Subir rama específica
+git pull origin <rama>   # Traer rama específica
+git fetch origin         # Traer todos los cambios
+```
 
-## 🚀 Primeros Pasos
+## 📜 **Historial**
+```bash
+git log                  # Ver historial completo
+git log --oneline       # Historial resumido
+git log --graph         # Historial con árbol
+git diff                # Cambios sin stage
+git diff --staged      # Cambios en stage
+git show <commit>      # Ver cambios de un commit
+```
 
-### Inicializar un repositorio
+## 🧹 **Deshacer Cambios**
+```bash
+git restore <archivo>           # Descartar cambios sin stage
+git restore --staged <archivo>  # Quitar archivo del stage
+git reset --soft HEAD~1        # Deshacer commit manteniendo cambios
+git reset --hard HEAD~1        # Deshacer commit y eliminar cambios
+git revert <commit>            # Nuevo commit que revierte cambios
+```
+
+## 📦 **Stash (Guardado Temporal)**
+```bash
+git stash               # Guardar cambios temporalmente
+git stash list         # Ver lista de stashes
+git stash pop          # Recuperar y eliminar último stash
+git stash apply        # Recuperar sin eliminar
+git stash drop         # Eliminar stash
+```
+
+## 🏷️ **Tags**
+```bash
+git tag                 # Listar tags
+git tag <nombre>       # Crear tag ligero
+git tag -a <nombre> -m "mensaje"  # Tag anotado
+git push origin <tag>  # Subir tag específico
+git push --tags        # Subir todos los tags
+```
+
+## 🚨 **Casos Comunes**
+
+### **Subir cambios por primera vez:**
 ```bash
 git init
-git status
+git add .
+git commit -m "primer commit"
+git remote add origin <url>
+git push -u origin main
 ```
 
-### Agregar archivos al staging area
+### **Actualizar repo local:**
 ```bash
-git add FILE        # Agregar un archivo específico
-git add .           # Agregar todos los cambios
+git pull origin main
 ```
 
-### Crear el primer commit
+### **Crear feature branch:**
 ```bash
-git commit -m "MENSAJE"
+git checkout -b feature/nueva
+# hacer cambios
+git add .
+git commit -m "nueva funcionalidad"
+git push origin feature/nueva
+```
+
+## 💡 **Tips Rápidos**
+- `git help <comando>` - Ayuda sobre comando
+- `git log --oneline --graph --all` - Ver historial completo bonito
+- `.gitignore` - Archivo para ignorar archivos/carpetas
+- `git commit --amend` - Modificar último commit
+- `git reset HEAD~1` - Deshacer último commit (manteniendo cambios)
+
+## 🎯 **Flujo de Trabajo Típico**
+```bash
+# 1. Actualizar
+git pull origin main
+
+# 2. Crear rama
+git checkout -b mi-rama
+
+# 3. Hacer cambios y commit
+git add .
+git commit -m "descripción"
+
+# 4. Subir rama
+git push origin mi-rama
+
+# 5. (En GitHub/GitLab) Crear Pull Request
 ```
 
 ---
 
-## 📝 Gestión de Cambios
-
-### Descartar cambios no commiteados en un archivo
-```bash
-git checkout -- FILE
-```
-
-### Descartar todos los cambios en el directorio actual
-```bash
-git checkout -- .
-```
-
-### Restaurar un archivo a un commit específico
-```bash
-git checkout HASH -- FILE
-git checkout HEAD~n -- FILE
-```
-
----
-
-## 📋 Ver Historial de Commits
-
-### Ver todos los commits con hashes completos
-```bash
-git log
-```
-
-### Ver en formato compacto
-```bash
-git log --oneline
-```
-
-### Ver últimos N commits
-```bash
-git log -3
-git log --oneline -5
-```
-
----
-
-## 🔄 Moverse Entre Commits
-
-### Ver todos los cambios (incluyendo eliminados)
-```bash
-git reflog
-```
-
-### Moverse entre commits (solo vista, retorna al último commit con el mismo comando)
-```bash
-git reset --mixed HASH
-```
-
-### Retornar a un commit anterior ⚠️ (ELIMINA cambios posteriores)
-```bash
-git reset --hard HASH
-```
-
----
-
-**⚡ Nota:** Siempre recuerda retornar al último commit después de navegarexplorando.
+✨ *Esta guía cubre los comandos más utilizados de Git. ¡Perfecta para tener como referencia rápida!* ✨
