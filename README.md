@@ -10,30 +10,12 @@ Este repositorio contiene apuntes y guias rapidas para aprender y consultar Git,
 
 ## Contenido del repositorio
 
-- [guiaRapidaGit.md](guiaRapidaGit.md): guia rapida con los comandos mas usados de Git.
-	- Configuracion inicial y verificacion.
-	- Operaciones basicas (status, add, commit).
-	- Ramas y fusiones.
-	- Remotos, push/pull/fetch.
-	- Historial y revision de cambios.
-	- Deshacer cambios y revertir commits.
-	- Stash y tags.
-	- Flujos tipicos de trabajo.
-
-- [github-gitlab-os.md](github-gitlab-os.md): guia para trabajar con GitHub y GitLab en distintos sistemas operativos.
-	- Instalacion de Git y utilidades (man, less, tree).
-	- Creacion y uso de llaves SSH.
-	- Configuracion de SSH para GitHub y GitLab.
-	- Uso de man y less para documentacion.
-	- Flujos de PR/MR, forks y sincronizacion.
-	- CLI oficiales (gh y glab).
-	- Solucion de problemas comunes.
+- [guiaCompletaGit.md](guiaCompletaGit.md): Guía completa y definitiva con la instalación en múltiples distribuciones de Linux (Debian/Ubuntu, Arch, Fedora, openSUSE), configuración SSH, comandos locales, remotos, resolución de problemas y buenas prácticas.
 
 ## Como usar este repo
 
-1. Empieza por [guiaRapidaGit.md](guiaRapidaGit.md) para una vista general de Git.
-2. Si necesitas trabajar con GitHub o GitLab, revisa [github-gitlab-os.md](github-gitlab-os.md).
-3. Copia y adapta los comandos segun tu sistema operativo y tu flujo de trabajo.
+1. Lee la [guiaCompletaGit.md](guiaCompletaGit.md) como referencia principal.
+2. Copia y adapta los comandos según tu sistema operativo y tu flujo de trabajo.
 
 ## Flujo de estudio sugerido
 
