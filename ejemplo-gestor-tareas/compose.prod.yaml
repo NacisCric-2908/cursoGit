@@ -1,0 +1,13 @@
+services:
+  web:
+    image: ${IMAGEN:-ghcr.io/usuario/gestor-tareas}:${IMAGE_TAG:-latest}
+    ports:
+      - "8000:8000"
+    environment:
+      - DB_PATH=/datos/tareas.db
+    volumes:
+      - datos:/datos
+    restart: unless-stopped
+
+volumes:
+  datos:

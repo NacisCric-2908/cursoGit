@@ -1,0 +1,135 @@
+name: CD
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cd-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  REGISTRO: ghcr.io
+
+jobs:
+  # 1. Reutiliza el CI completo: si falla, no se despliega nada
+  ci:
+    uses: ./.github/workflows/ci.yml
+    secrets: inherit
+
+  # 2. Construye la imagen UNA vez y la publica en GHCR
+  imagen:
+    needs: ci
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      tag_sha: ${{ steps.vars.outputs.tag_sha }}
+    steps:
+      - uses: actions/checkout@v6
+      - id: vars
+        run: echo "tag_sha=sha-${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+      - uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRO }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRO }}/${{ github.repository }}
+          tags: |
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=sha,format=short,prefix=sha-
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            APP_COMMIT=${{ github.sha }}
+
+  # 3. CD intermedio: Render, disparado con un deploy hook
+  render:
+    needs: imagen
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment:
+      name: production-render
+      url: ${{ vars.RENDER_URL }}
+    steps:
+      - name: Disparar despliegue en Render
+        env:
+          HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
+        run: |
+          curl -fsS -X POST "${HOOK}&ref=${GITHUB_SHA}" > /dev/null
+          echo "Despliegue solicitado para el commit ${GITHUB_SHA::7}"
+      - name: Smoke test (espera a que la nueva versión responda)
+        env:
+          URL: ${{ vars.RENDER_URL }}
+        run: |
+          for intento in $(seq 1 40); do
+            version=$(curl -fsS --max-time 60 "${URL}/version" | grep -o '"commit": *"[^"]*"' | cut -d'"' -f4 || true)
+            if [ "${version}" = "${GITHUB_SHA::7}" ]; then
+              echo "✅ Render sirve la versión ${version}"
+              exit 0
+            fi
+            echo "Intento ${intento}: versión actual '${version:-sin respuesta}', esperando..."
+            sleep 15
+          done
+          echo "❌ La nueva versión no respondió a tiempo"
+          exit 1
+
+  # 4. CD difícil: tu propio PC como servidor (runner self-hosted)
+  servidor-local:
+    needs: imagen
+    if: github.ref == 'refs/heads/main'
+    runs-on: [self-hosted, linux, produccion-local]
+    environment:
+      name: production-local
+    permissions:
+      contents: read
+      packages: read
+    env:
+      PROYECTO: ${{ github.event.repository.name }}
+      IMAGE_TAG: ${{ needs.imagen.outputs.tag_sha }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRO }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Desplegar con Docker Compose
+        run: |
+          export IMAGEN="${REGISTRO}/${GITHUB_REPOSITORY,,}"
+          bash scripts/desplegar.sh
+      - name: Estado final
+        if: always()
+        run: docker compose -p "${PROYECTO}" -f compose.prod.yaml ps
+
+  # 5. Bonus: Vercel sin auto-deploy (solo si tu proyecto es compatible)
+  vercel:
+    needs: ci
+    if: github.ref == 'refs/heads/main' && vars.USAR_VERCEL == 'true'
+    runs-on: ubuntu-latest
+    environment:
+      name: production-vercel
+    env:
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+    steps:
+      - uses: actions/checkout@v6
+      - run: npm install --global vercel@latest
+      - run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+      - run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+      - run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}

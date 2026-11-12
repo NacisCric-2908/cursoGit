@@ -1,0 +1,14 @@
+# Desarrollo local: construye la imagen desde el código
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - DB_PATH=/datos/tareas.db
+    volumes:
+      - datos:/datos
+    restart: unless-stopped
+
+volumes:
+  datos:

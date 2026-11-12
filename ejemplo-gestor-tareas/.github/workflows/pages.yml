@@ -1,0 +1,49 @@
+name: Publicar en GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  construir:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements-dev.txt
+      - name: Ejecutar tests y generar reporte HTML
+        run: pytest --cov --cov-report=html
+      - name: Armar el sitio
+        run: |
+          mkdir -p sitio
+          cp docs/index.html sitio/
+          cp -r htmlcov sitio/cobertura
+          sed -i "s/__COMMIT__/${GITHUB_SHA::7}/; s/__FECHA__/$(date -u +'%Y-%m-%d %H:%M UTC')/" sitio/index.html
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: sitio
+
+  desplegar:
+    needs: construir
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Desplegar
+        id: deployment
+        uses: actions/deploy-pages@v4
