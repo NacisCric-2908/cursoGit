@@ -1,39 +1,17 @@
-# Curso Git - Material de apoyo
+# Guías del curso de Git/GitHub · Proyecto final
 
-Este repositorio contiene apuntes y guias rapidas para aprender y consultar Git, junto con una guia practica para trabajar con GitHub y GitLab en distintos sistemas operativos. La idea es que puedas usarlo como referencia en clase, en laboratorios o en proyectos personales.
+| # | Guía | Tipo | Para qué |
+|---|---|---|---|
+| 1 | [Comandos de Git](01-comandos-git.md) | Consulta | Referencia de comandos con explicación y ejemplo |
+| 2 | [Microcommits, ramas, Pull Requests y flujo de trabajo](02-flujo-de-trabajo-ramas-commits-pr.md) | Consulta | Teoría del flujo `feature → develop → test → main` + hotfix, y PR a fondo |
+| 3 | [Configuración del repositorio](03-configuracion-repositorio.md) | Práctica | Licencia, README, rulesets, permisos, seguridad, plantillas y tablero Kanban |
+| 4 | [Docker y Docker Compose](04-docker.md) | Teoría + práctica | Conceptos, instalación en Ubuntu/Debian/Fedora/Arch, comandos y práctica |
+| 5 | [Pruebas de código](05-testing.md) | Teoría + práctica | Tipos de pruebas; tests unitarios y de integración con pytest |
+| 6 | [CI/CD con GitHub Actions, Pages y SonarQube](06-ci-cd-github-actions-sonarqube.md) | Teoría + práctica | Pipeline de CI, GitHub Pages, SonarQube Cloud y Community Build |
+| 7 | [Proyecto final](07-proyecto-final.md) | Práctica + evaluación | Render, Vercel, runner self-hosted, reporte de calidad, rúbrica y defensa |
 
-## Objetivo
+La carpeta [`ejemplo-gestor-tareas/`](ejemplo-gestor-tareas/) contiene el proyecto de referencia de las guías 5, 6 y 7: código, tests (30, todos pasan), Dockerfile, Compose y workflows validados.
 
-- Reunir en un solo lugar los comandos mas usados de Git con ejemplos claros.
-- Explicar el flujo de trabajo habitual con repositorios remotos.
-- Documentar configuracion inicial, autenticacion con SSH y herramientas de apoyo.
+**Orden recomendado:** 2 → 3 → 4 → 5 → 6 → 7, con la 1 siempre abierta como consulta.
 
-## Contenido del repositorio
-
-- [guiaCompletaGit.md](guiaCompletaGit.md): Guía completa y definitiva con la instalación en múltiples distribuciones de Linux (Debian/Ubuntu, Arch, Fedora, openSUSE), configuración SSH, comandos locales, remotos, resolución de problemas y buenas prácticas.
-
-## Como usar este repo
-
-1. Lee la [guiaCompletaGit.md](guiaCompletaGit.md) como referencia principal.
-2. Copia y adapta los comandos según tu sistema operativo y tu flujo de trabajo.
-
-## Flujo de estudio sugerido
-
-1. Configura Git y verifica tu usuario y correo.
-2. Practica con un repositorio local (init, add, commit).
-3. Crea ramas, fusiona y revisa el historial.
-4. Conecta un remoto y aprende a hacer push/pull.
-5. Configura SSH y prueba la conexion.
-6. Practica un flujo completo con PR/MR.
-
-## Recomendaciones
-
-- Mantener mensajes de commit claros y breves.
-- Usar ramas para cambios grandes o experimentales.
-- Sincronizar con el remoto antes de empezar a trabajar.
-- Consultar `man git` y `git help <comando>` cuando tengas dudas.
-
-## Notas
-
-- Los comandos estan pensados como referencia rapida, no como sustituto de la documentacion oficial.
-- Si estas en Windows, usa Git Bash para una experiencia mas cercana a Linux.
+**Fecha de presentación del proyecto:** miércoles 25 de noviembre de 2026.
