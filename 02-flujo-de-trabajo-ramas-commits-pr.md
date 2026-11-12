@@ -175,6 +175,7 @@ Es una mezcla de **Git Flow** y **GitLab Flow**: tiene ramas de trabajo (`featur
 ```mermaid
 gitGraph
     commit id: "init"
+    branch test
     branch develop
     checkout develop
     commit id: "setup"
@@ -184,7 +185,6 @@ gitGraph
     commit id: "test: login"
     checkout develop
     merge feature/1-login id: "PR #2"
-    branch test
     checkout test
     merge develop id: "PR #3"
     checkout main
